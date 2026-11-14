@@ -1,0 +1,2 @@
+# Fix and format the staged files (lint-staged.config.js). Skip once with: git commit --no-verify
+pnpm exec lint-staged

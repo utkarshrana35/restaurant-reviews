@@ -1,0 +1,38 @@
+{
+  "name": "restaurant-reviews",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @restaurant-reviews/common build && concurrently -k -n common,api,web -c gray,green,blue \"pnpm --filter @restaurant-reviews/common dev\" \"pnpm --filter @restaurant-reviews/backend dev\" \"pnpm --filter @restaurant-reviews/frontend dev\"",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "infra:up": "docker compose up -d --wait && pnpm --filter @restaurant-reviews/backend storage:setup",
+    "infra:down": "docker compose down",
+    "test:unit": "pnpm -r test:unit",
+    "test:integration": "pnpm -r test:integration",
+    "seed": "pnpm --filter @restaurant-reviews/backend seed",
+    "reviews:delete-orphans": "pnpm --filter @restaurant-reviews/backend reviews:delete-orphans",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "concurrently": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-next": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "husky": "catalog:",
+    "lint-staged": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  }
+}

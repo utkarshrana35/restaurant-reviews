@@ -1,0 +1,36 @@
+# Local infrastructure for restaurant images. Start with `pnpm infra:up`.
+#
+#   browser ──(upload, presigned POST)──▶ localstack (S3)    127.0.0.1:4566
+#   browser ──(load image)──▶ cdn (nginx) ──▶ localstack     127.0.0.1:4567
+#
+# In production the same roles are played by S3 and a CloudFront distribution.
+services:
+  localstack:
+    # Pinned: this is the community edition, which needs no account. Later images refuse to
+    # start without a LocalStack auth token.
+    image: localstack/localstack:4.4.0
+    ports:
+      # Bound to this machine only.
+      - '127.0.0.1:4566:4566'
+    environment:
+      SERVICES: s3
+    healthcheck:
+      test: ['CMD', 'curl', '-fsS', 'http://localhost:4566/_localstack/health']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  cdn:
+    image: nginx:1.27.5-alpine
+    ports:
+      - '127.0.0.1:4567:80'
+    volumes:
+      - ./infra/cdn/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      localstack:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1/healthz']
+      interval: 5s
+      timeout: 5s
+      retries: 20

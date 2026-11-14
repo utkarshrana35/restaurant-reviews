@@ -1,0 +1,15 @@
+# Checks that need no services, so they pass on any machine that can run the app. The integration
+# tests need MongoDB and LocalStack, so run `pnpm test` yourself before pushing changes to the API.
+# Skip once with: git push --no-verify
+set -e
+
+echo "pre-push: type-checking (building common first)"
+pnpm --filter @restaurant-reviews/common build > /dev/null
+pnpm typecheck
+
+echo "pre-push: lint and format"
+pnpm lint
+pnpm exec prettier --check .
+
+echo "pre-push: unit tests"
+pnpm test:unit
